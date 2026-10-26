@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLAB 644.2.1 Walkthrough</title>
+    <style>
+        :root {
+            --ps-blue: #004F9F;
+            --ps-light-blue: #E5F0FA;
+            --ps-orange: #F58025;
+            --bg-color: #f4f7f6;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .walkthrough-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 850px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            background-color: var(--ps-blue);
+            color: var(--white);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .card-header p {
+            margin: 8px 0 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .progress-track {
+            width: 100%;
+            background-color: var(--ps-light-blue);
+            height: 6px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--ps-orange);
+            width: 0%;
+            transition: width 0.4s ease-out;
+        }
+
+        .card-body {
+            padding: 35px;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .visual-container {
+            width: 100%;
+            height: 320px;
+            background-color: #eaeaea;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .visual-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.4s ease;
+        }
+
+        .phase-title {
+            font-size: 1.6rem;
+            color: var(--ps-blue);
+            margin-bottom: 15px;
+            font-weight: bold;
+            transition: opacity 0.4s ease;
+        }
+
+        .phase-desc {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            min-height: 90px;
+            transition: opacity 0.4s ease;
+        }
+
+        .card-footer

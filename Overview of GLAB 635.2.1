@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLAB 635.2.1 Walkthrough - Fluid Dynamics & Shock Mitigation</title>
+    <style>
+        :root {
+            --ps-blue: #005587;
+            --ps-orange: #F26D21;
+            --ps-dark: #1E293B;
+            --ps-light: #F8FAFC;
+            --ps-card: #FFFFFF;
+            --ps-border: #E2E8F0;
+            --text-muted: #64748B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--ps-light);
+            color: var(--ps-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #app-container {
+            background-color: var(--ps-card);
+            width: 100%;
+            max-width: 820px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--ps-border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--ps-blue);
+            color: #ffffff;
+            padding: 24px;
+            text-align: center;
+            border-bottom: 4px solid var(--ps-orange);
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 0.88rem;
+            opacity: 0.9;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #E2E8F0;
+            height: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--ps-orange);
+            width: 20%;
+            transition: width 0.4s ease;
+        }
+
+        .content-area {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 420px;
+        }
+
+        .phase-badge {
+            background-color: #E0F2FE;
+            color: var(--ps-blue);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            border: 1px solid #BAE6FD;
+        }
+
+        .phase-title {
+            color: var(--ps-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .schematic-box {
+            width: 100%;
+            min-height: 210px;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            border-radius: 10px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 22px;
+            color: #38BDF8;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .schematic-title {
+            color: #F8FAFC;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .schematic-caption {
+            color: #94A3B8;
+            font-size: 0.82rem;
+            margin-top: 4px;
+        }
+
+        .phase-text {
+            font-size: 0.98rem;
+            line-height: 1.65;
+            color: #334155;
+            width: 100%;
+            text-align: left;
+        }
+
+        .phase-text p {
+            margin-bottom: 10px;
+        }
+
+        .phase-text ul {
+            padding-left: 20px;
+        }
+
+        .phase-text li {
+            margin-bottom: 8px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 30px;
+            background-color: #F8FAFC;
+            border-top: 1px solid var(--ps-border);
+        }
+
+        .btn {
+            background-color: var(--ps-blue);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #003D63;
+        }
+
+        .btn:disabled {
+            background-color: #CBD5E1;
+            cursor: not-allowed;
+            color: #94A3B8;
+        }
+
+        .step-count {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <div class="header">
+            <h1>GLAB 635.2.1 Fluid Dynamics & Shock Mitigation</h1>
+            <p>Student Pre-Lab High-Level Walkthrough</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="content-area">
+            <span class="phase-badge" id="phase-badge">Phase 1 of 5</span>
+            <h2 class="phase-title" id="phase-title">Loading...</h2>
+            
+            <div class="schematic-box" id="schematic-container">
+            </div>
+
+            <div class="phase-text" id="phase-text">
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="btn-prev" onclick="changePhase(-1)" disabled>Previous</button>
+            <span class="step-count" id="step-count">1 / 5</span>
+            <button class="btn" id="btn-next" onclick="changePhase(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const phases = new Array();
+        phases.push({
+            badge: "Phase 1 of 5",
+            title: "Pre-Lab VR Onboarding & Zero-Energy LOTO Isolation",
+            svgGraphic: '<svg width="180" height="90" viewBox="0 0 180 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="20" width="60" height="50" rx="8" stroke="#38BDF8" stroke-width="2" fill="#1E293B"/><circle cx="45" cy="45" r="14" stroke="#F26D21" stroke-width="2.5" fill="none"/><line x1="45" y1="31" x2="45" y2="59" stroke="#F26D21" stroke-width="2.5"/><rect x="105" y="20" width="60" height="50" rx="8" stroke="#38BDF8" stroke-width="2" fill="#1E293B"/><path d="M125 45 L135 55 L150 35" stroke="#4ADE80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
+            schematicTitle: "System Schematic 1: VR Simulation & Zero-Energy Isolation",
+            schematicCaption: "Interplay PLMB113 VR Grid & Fluke 117 Live-Dead-Live Electrical Verification",
+            text: "<p>Learners execute digital onboarding and safety compliance prior to skid testing:</p><ul><li><strong>Zone 2 VR Simulation:</strong> Access Meta Quest 3 headsets in Zone 2 to complete Interplay PLMB113, visualizing laminar vs turbulent fluid boundary layers in 3D pipe models.</li><li><strong>Zero-Energy LOTO & LDL Test:</strong> Apply physical padlocks to the Fluid Tabletop Trainer disconnect in Zone 3 and perform a 3-step Live-Dead-Live check using a Fluke 117 DMM per NFPA 70E.</li></ul>"
+        });
+        phases.push({
+            badge: "Phase 2 of 5",
+            title: "Flow Regime Classification & Reynolds Number (Re) Sprint",
+            svgGraphic: '<svg width="180" height="90" viewBox="0 0 180 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="20" width="140" height="50" rx="6" stroke="#38BDF8" stroke-width="2" fill="#1E293B"/><line x1="30" y1="35" x2="150" y2="35" stroke="#38BDF8" stroke-width="2 stroke-dasharray=4 4"/><path d="M30 55 C60 40, 90 70, 120 40 L150 55" stroke="#F26D21" stroke-width="2" fill="none"/><text x="90" y="30" fill="#F8FAFC" font-size="10" font-family="sans-serif" text-anchor="middle" font-weight="bold">Re = (v * D) / nu</text></svg>',
+            schematicTitle: "System Schematic 2: Flow Regime Reynolds Formula",
+            schematicCaption: "Laminar (Re < 2000) vs Turbulent (Re > 4000) Flow Calculation",
+            text: "<p>Learners evaluate fluid flow regimes on Dosing Skid #2 using single-variable algebraic substitution:</p><ul><li><strong>Velocity Calculations:</strong> Calculate Re for Dosing Rate A (v = 0.15 ft/s, Re = 1,500) and Flush Mode B (v = 0.50 ft/s, Re = 5,000).</li><li><strong>Regime Classification:</strong> Classify flow regimes as laminar or turbulent and assess system friction and line chatter risks.</li><li><strong>GDP Documentation:</strong> Log all physical flow measurements and single-variable calculations in Table 2.1 in permanent pen.</li></ul>"
+        });
+        phases.push({
+            badge: "Phase 3 of 5",
+            title: "Hydraulic Shock (Water Hammer) Physical Testing",
+            svgGraphic: '<svg width="180" height="90" viewBox="0 0 180 90" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 60 L60 60 L70 20 L80 75 L90 50 L160 60" stroke="#EF4444" stroke-width="2.5" fill="none"/><circle cx="70" cy="20" r="4" fill="#EF4444"/><text x="115" y="30" fill="#EF4444" font-size="9" font-family="sans-serif" font-weight="bold">Ppeak = 180 PSI</text></svg>',
+            schematicTitle: "System Schematic 3: Unmitigated Hydraulic Shock Transient",
+            schematicCaption: "Fast Solenoid Valve Closure & High-Speed Transducer Peak-Capture",
+            text: "<p>Learners conduct transient pressure surge testing on the Zone 3 Fluid Tabletop Trainer skid:</p><ul><li><strong>Transducer Hookup:</strong> Connect Fluke Pressure Transducers to high-speed digital peak-capture displays at Test Port TP-1.</li><li><strong>Unmitigated Shock Test:</strong> Rapidly close the pneumatic solenoid valve to trigger water hammer, capturing an unmitigated peak pressure surge of 180.0 PSI.</li><li><strong>Vibration Logging:</strong> Document severe line chatter and mechanical header vibration in Table 2.2.</li></ul>"
+        });
+        phases.push({
+            badge: "Phase 4 of 5",
+            title: "Air Accumulation Chamber Installation & Spike Mitigation",
+            svgGraphic: '<svg width="180" height="90" viewBox="0 0 180 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="75" y="15" width="30" height="40" rx="15" stroke="#4ADE80" stroke-width="2" fill="#1E293B"/><line x1="20" y1="65" x2="160" y2="65" stroke="#38BDF8" stroke-width="3"/><path d="M20 65 L70 65 L75 55 L85 60 L160 65" stroke="#4ADE80" stroke-width="2" fill="none"/><text x="90" y="82" fill="#4ADE80" font-size="9" font-family="sans-serif" text-anchor="middle" font-weight="bold">87.5% Reduction</text></svg>',
+            schematicTitle: "System Schematic 4: Air Accumulation Chamber Cushioning",
+            schematicCaption: "Inline Water Hammer Arrestor Installation & Pressure Suppression",
+            text: "<p>Learners install physical engineering controls to absorb fluid kinetic shock energy:</p><ul><li><strong>Arrestor Installation:</strong> Thread an Air Accumulation Chamber into Test Port TP-1 inline upstream of the fast-closing valve.</li><li><strong>Mitigated Pressure Measurement:</strong> Re-test transient shock pressure, capturing a suppressed peak pressure of 75.0 PSI.</li><li><strong>Efficacy Calculation:</strong> Calculate transient spike reduction percentage, confirming an 87.5% reduction that exceeds the 80% mitigation threshold.</li></ul>"
+        });
+        phases.push({
+            badge: "Phase 5 of 5",
+            title: "AI Maintenance Audit & Quality Verification Sign-Off",
+            svgGraphic: '<svg width="180" height="90" viewBox="0 0 180 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="15" width="120" height="60" rx="6" stroke="#4ADE80" stroke-width="2" fill="#1E293B"/><path d="M45 45 L55 55 L75 35" stroke="#4ADE80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="85" y1="38" x2="135" y2="38" stroke="#F8FAFC" stroke-width="2" stroke-linecap="round"/><line x1="85" y1="52" x2="135" y2="52" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/><text x="110" y="65" fill="#94A3B8" font-size="8" font-family="sans-serif" text-anchor="middle">GDP Sign-Off</text></svg>',
+            schematicTitle: "System Schematic 5: AI Audit Override & Peer Quality Sign-Off",
+            schematicCaption: "Human Verification of AI Logs & GDP Station Handover",
+            text: "<p>The lab closes with AI output auditing, dual signature sign-off, and classroom cleanup:</p><ul><li><strong>AI Draft Audit:</strong> Detect three engineering errors in an AI maintenance log (suggesting higher velocity, skipping arrestors, and omitting meter checks) and write a corrected GDP log entry.</li><li><strong>Quality Verification Sign-Off:</strong> Obtain primary technician and peer inspector signatures, reset equipment, clear service aisles, and submit completed worksheets to Canvas LMS.</li></ul>"
+        });
+
+        let currentIndex = 0;
+
+        function updateUI() {
+            const current = phases.at(currentIndex);
+            document.getElementById('phase-badge').textContent = current.badge;
+            document.getElementById('phase-title').textContent = current.title;
+            document.getElementById('phase-text').innerHTML = current.text;
+            
+            const schematicContainer = document.getElementById('schematic-container');
+            schematicContainer.innerHTML = current.svgGraphic +
+                '<div class="schematic-title">' + current.schematicTitle + '</div>' +
+                '<div class="schematic-caption">' + current.schematicCaption + '</div>';
+
+            const progress = ((currentIndex + 1) / phases.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('step-count').textContent = (currentIndex + 1) + ' / ' + phases.length;
+
+            document.getElementById('btn-prev').disabled = currentIndex === 0;
+            
+            const btnNext = document.getElementById('btn-next');
+            if (currentIndex === phases.length - 1) {
+                btnNext.textContent = "Finish";
+                btnNext.disabled = true;
+            } else {
+                btnNext.textContent = "Next";
+                btnNext.disabled = false;
+            }
+        }
+
+        function changePhase(step) {
+            currentIndex += step;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= phases.length) currentIndex = phases.length - 1;
+            updateUI();
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>

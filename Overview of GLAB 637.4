@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLAB 637.4.1 Walkthrough</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #e9ecef;
+            --text-color: #333333;
+            --light-text: #666666;
+            --white: #ffffff;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--white);
+            max-width: 800px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            height: 8px;
+            width: 100%;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: #fff;
+            height: 100%;
+            width: 20%;
+            border-radius: 20px;
+            transition: width var(--transition-speed) ease-in-out;
+        }
+
+        .content-area {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn var(--transition-speed) ease-in-out;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 350px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--secondary-color);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity var(--transition-speed);
+        }
+
+        .text-content h2 {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .text-content p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--light-text);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: var(--secondary-color);
+            border-top: 1px solid #ddd;
+        }
+
+        button {
+            padding: 10px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .btn-prev {
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background-color: #f0f8ff;
+        }
+
+        .btn-prev:disabled {
+            border-color: #ccc;
+            color: #ccc;
+            cursor: not-allowed;
+            background-color: transparent;
+        }
+
+        .btn-next {
+            background-color: var(--primary-color);
+            color: var(--white);
+            box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2);
+        }
+
+        .btn-next:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade {
+            animation: fadeIn var(--transition-speed) ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>GLAB 637.4.1: Control Schematics & Fault Isolation</h1>
+            <p id="phase-indicator">Phase 1 of 5</p>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress"></div>
+            </div>
+        </div>
+
+        <div class="content-area" id="content-container">
+            <div class="image-container">
+                <img id="phase-image" src="https://image.pollinations.ai/prompt/technician-wearing-vr-headset-in-industrial-manufacturing-classroom-realistic-photo?width=800&height=400&nologo=true" alt="Phase Image">
+            </div>
+            <div class="text-content">
+                <h2 id="phase-title">1. Pre-Lab Tech Onboarding (VR Setup)</h2>
+                <p id="phase-desc">Get familiar with the diagnostic environment before touching physical hardware. You'll use Meta Quest 3 headsets and Interplay simulations to practice probing virtual control panels, observing voltage readings, and reviewing safety protocols.</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-prev" id="btn-prev" disabled onclick="navigate(-1)">Previous</button>
+            <button class="btn-next" id="btn-next" onclick="navigate(1)">Next Phase</button>
+        </div>
+    </div>
+
+    <script>
+        const phases = [
+            {
+                title: "1. Pre-Lab Tech Onboarding",
+                image: "https://image.pollinations.ai/prompt/technician-wearing-vr-headset-in-industrial-manufacturing-classroom-realistic-photo?width=800&height=400&nologo=true",
+                desc: "Get familiar with the diagnostic environment before touching physical hardware. You'll use Meta Quest 3 headsets and Interplay simulations to practice probing virtual control panels, observing voltage readings, and reviewing essential safety protocols."
+            },
+            {
+                title: "2. Zero-Energy LOTO & Live-Dead-Live Check",
+                image: "https://image.pollinations.ai/prompt/industrial-lockout-tagout-padlock-on-electrical-panel-with-digital-multimeter-realistic?width=800&height=400&nologo=true",
+                desc: "Safety is paramount. You will step across the Arc Flash Boundary, don your PPE, and execute a strict Zero-Energy Lockout/Tagout (LOTO) procedure on the SMC BEMATE-200 trainer. You will then verify total isolation using the mandatory 3-step Live-Dead-Live multimeter check."
+            },
+            {
+                title: "3. Schematic Tracing & Voltage-Drop Fault Isolation",
+                image: "https://image.pollinations.ai/prompt/technician-probing-electrical-control-panel-with-digital-multimeter-while-reading-schematic-blueprint?width=800&height=400&nologo=true",
+                desc: "Trace the 24V DC power path on Schematic Sheet E-101. You will apply systematic voltage-drop workflows across specific test points (TP1-TP6) to locate an injected fault (an open resistor) and safely replace the defective component."
+            },
+            {
+                title: "4. GDP Redlining & Documentation",
+                image: "https://image.pollinations.ai/prompt/close-up-of-engineering-electrical-schematic-being-marked-up-with-red-green-and-blue-pens?width=800&height=400&nologo=true",
+                desc: "Document your physical modifications directly on the control schematics. You will apply standard Good Documentation Practices (GDP) using specific color-coding (Red for additions, Green for deletions, Blue for notes) to accurately reflect your field repairs."
+            },
+            {
+                title: "5. AI Diagnostic Draft Audit",
+                image: "https://image.pollinations.ai/prompt/technician-typing-on-laptop-auditing-ai-generated-maintenance-report-in-manufacturing-plant?width=800&height=400&nologo=true",
+                desc: "AI tools can speed up reporting but require human verification. You will audit an AI-generated draft maintenance log, identify dangerous engineering and safety errors, and submit a fully corrected, GDP-compliant shift handover report."
+            }
+        ];
+
+        let currentIndex = 0;
+
+        const elTitle = document.getElementById('phase-title');
+        const elDesc = document.getElementById('phase-desc');
+        const elImage = document.getElementById('phase-image');
+        const elIndicator = document.getElementById('phase-indicator');
+        const elProgress = document.getElementById('progress');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const contentContainer = document.getElementById('content-container');
+
+        function updateUI() {
+            // Trigger reflow for animation
+            contentContainer.classList.remove('fade');
+            void contentContainer.offsetWidth; 
+            contentContainer.classList.add('fade');
+
+            const currentPhase = phases[currentIndex];
+            elTitle.textContent = currentPhase.title;
+            elDesc.textContent = currentPhase.desc;
+            elImage.src = currentPhase.image;
+            
+            elIndicator.textContent = `Phase ${currentIndex + 1} of ${phases.length}`;
+            elProgress.style.width = `${((currentIndex + 1) / phases.length) * 100}%`;
+
+            btnPrev.disabled = currentIndex === 0;
+            
+            if (currentIndex === phases.length - 1) {
+                btnNext.textContent = "Finish Walkthrough";
+            } else {
+                btnNext.textContent = "Next Phase";
+            }
+        }
+
+        function navigate(direction) {
+            if (direction === 1 && currentIndex === phases.length - 1) {
+                alert("Walkthrough Complete! You are now ready to begin GLAB 637.4.1.");
+                currentIndex = 0; // reset for demo purposes
+            } else {
+                currentIndex += direction;
+            }
+            updateUI();
+        }
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLAB 637.2.1 Walkthrough | Combination DC Circuit Analysis</title>
+    <style>
+        :root {
+            --primary: #002855;
+            --primary-accent: #0072CE;
+            --secondary-accent: #00A3E0;
+            --safety-orange: #FF6B00;
+            --safety-yellow: #F59E0B;
+            --success-green: #10B981;
+            --dark-bg: #0F172A;
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border-light: #E2E8F0;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-subtle: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 20px 35px -10px rgba(0, 40, 85, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        /* Main Container */
+        .app-container {
+            width: 100%;
+            max-width: 960px;
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-subtle);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Header Section */
+        header {
+            background: var(--primary);
+            color: #ffffff;
+            padding: 28px 32px 20px 32px;
+            position: relative;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: rgba(0, 163, 224, 0.2);
+            color: var(--secondary-accent);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0, 163, 224, 0.3);
+        }
+
+        header h1 {
+            font-size: 1.65rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: #94A3B8;
+            font-size: 0.95rem;
+        }
+
+        /* Progress Bar & Tracker */
+        .progress-section {
+            background: #0B132B;
+            padding: 16px 32px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+            width: 20%;
+            transition: width 0.4s ease-in-out;
+        }
+
+        .phase-pills {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .pill {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748B;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-md);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .pill.active {
+            color: #FFFFFF;
+            background: rgba(0, 114, 206, 0.25);
+            border-color: var(--primary-accent);
+        }
+
+        .pill.completed {
+            color: var(--success-green);
+        }
+
+        /* Phase Display Content Area */
+        .content-area {
+            padding: 32px;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .phase-view {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: center;
+            animation: fadeIn 0.35s ease-in-out forwards;
+        }
+
+        .phase-view.active {
+            display: grid;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Left Visual Graphic Panel */
+        .visual-panel {
+            background: #F8FAFC;
+            border-radius: var(--radius-md);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-light);
+            text-align: center;
+            min-height: 280px;
+            position: relative;
+        }
+
+        .visual-panel svg {
+            width: 100%;
+            max-width: 260px;
+            height: auto;
+            margin-bottom: 12px;
+        }
+
+        .visual-caption {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Right Content Panel */
+        .details-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .meta-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .tag-zone { background: #E0F2FE; color: #0369A1; }
+        .tag-time { background: #FEF3C7; color: #B45309; }
+        .tag-ppe { background: #FFEDD5; color: #C2410C; }
+
+        .phase-title {
+            font-size: 1.35rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .phase-summary {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .highlights-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .highlights-list li {
+            font-size: 0.88rem;
+            color: #334155;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .highlights-list li::before {
+            content: "✓";
+            color: var(--primary-accent);
+            font-weight: 900;
+            font-size: 0.95rem;
+        }
+
+        .pro-tip {
+            background: #F0F9FF;
+            border-left: 4px solid var(--primary-accent);
+            padding: 12px 14px;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-size: 0.83rem;
+            color: #0C4A6E;
+            line-height: 1.4;
+        }
+
+        .pro-tip strong {
+            color: var(--primary);
+        }
+
+        /* Navigation Footer */
+        .nav-footer {
+            padding: 20px 32px;
+            background: #F8FAFC;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #E2E8F0;
+            color: #475569;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #CBD5E1;
+            color: #1E293B;
+        }
+
+        .btn-primary {
+            background: var(--primary-accent);
+            color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(0, 114, 206, 0.25);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #005DA6;
+            box-shadow: 0 6px 16px rgba(0, 114, 206, 0.35);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .step-indicator {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .phase-view {
+                grid-template-columns: 1fr;
+            }
+            .visual-panel {
+                min-height: 200px;
+            }
+            .content-area {
+                padding: 20px;
+            }
+            header {
+                padding: 20px;
+            }
+            .progress-section {
+                padding: 12px 20px;
+            }
+            .phase-pills span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <span class="header-badge">GLAB 637.2.1 • Student Walkthrough</span>
+            <h1>Series, Parallel, & Combination DC Circuit Analysis</h1>
+            <p>Work Order WO-2026-ELEC-6372-01: Conveyor Sorting Skid #2 Diagnostic Overhaul</p>
+        </header>
+
+        <!-- Top Progress Section -->
+        <div class="progress-section">
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+            <div class="phase-pills">
+                <button class="pill active" onclick="goToPhase(0)">1. <span>VR & PPE</span></button>
+                <button class="pill" onclick="goToPhase(1)">2. <span>LOTO & LDL</span></button>
+                <button class="pill" onclick="goToPhase(2)">3. <span>Theory Math</span></button>
+                <button class="pill" onclick="goToPhase(3)">4. <span>Bench Test</span></button>
+                <button class="pill" onclick="goToPhase(4)">5. <span>AI Audit</span></button>
+            </div>
+        </div>
+
+        <!-- Interactive Content Container -->
+        <div class="content-area">
+            
+            <!-- PHASE 1 -->
+            <div class="phase-view active" id="phase-0">
+                <div class="visual-panel">
+                    <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="30" width="160" height="90" rx="12" fill="#002855" />
+                        <circle x="70" y="75" r="22" fill="#0072CE" />
+                        <circle x="130" y="75" r="22" fill="#0072CE" />
+                        <path d="M50 75 H150" stroke="#00A3E0" stroke-width="4" stroke-dasharray="4 4"/>
+                        <rect x="75" y="20" width="50" height="12" rx="4" fill="#FF6B00" />
+                        <!-- Safety Glasses Icon Overlay -->
+                        <path d="M60 130 C75 130 85 140 100 140 C115 140 125 130 140 130" stroke="#10B981" stroke-width="5" stroke-linecap="round"/>
+                        <circle cx="75" cy="130" r="12" stroke="#10B981" stroke-width="3" fill="none"/>
+                        <circle cx="125" cy="130" r="12" stroke="#10B981" stroke-width="3" fill="none"/>
+                    </svg>
+                    <span class="visual-caption">Zone 2 VR Grid & Safety Gate</span>
+                </div>
+                <div class="details-panel">
+                    <div class="meta-tags">
+                        <span class="tag tag-zone">Zone 2 (VR Grid) & Zone 1</span>
+                        <span class="tag tag-time">15 Minutes</span>
+                        <span class="tag tag-ppe">ANSI Z87.1 & A5 Gloves</span>
+                    </div>
+                    <h2 class="phase-title">Phase 1: VR Onboarding & Safety Gate</h2>
+                    <p class="phase-summary">
+                        Begin in the VR Grid to simulate combination circuit construction before stepping up to live benchtop equipment. Don safety gear before crossing the boundary.
+                    </p>
+                    <ul class="highlights-list">
+                        <li>Launch <strong>Interplay ELEC118</strong> on Meta Quest 3 headsets in Zone 2.</li>
+                        <li>Virtually construct series-parallel resistor networks and observe KVL voltage drops.</li>
+                        <li>Inspect TICONN ANSI Z87.1 safety glasses and Schwer ANSI A5 cut gloves.</li>
+                    </ul>
+                    <div class="pro-tip">
+                        <strong>Technician Tip:</strong> Virtual practice prevents costly lead placement errors during live bench measurements.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHASE 2 -->
+            <div class="phase-view" id="phase-1">
+                <div class="visual-panel">
+                    <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Lockout Hasp -->
+                        <rect x="85" y="20" width="30" height="50" rx="15" stroke="#FF6B00" stroke-width="6" fill="none"/>
+                        <rect x="70" y="60" width="60" height="45" rx="6" fill="#DC2626"/>
+                        <circle cx="100" cy="80" r="8" fill="#FFFFFF"/>
+                        <!-- DMM Probes -->
+                        <path d="M40 140 L70 100" stroke="#10B981" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M160 140 L130 100" stroke="#DC2626" stroke-width="4" stroke-linecap="round"/>
+                        <circle cx="70" cy="100" r="3" fill="#10B981"/>
+                        <circle cx="130" cy="100" r="3" fill="#DC2626"/>
+                    </svg>
+                    <span class="visual-caption">Zone 3 Zero-Energy Safety Protocol</span>
+                </div>
+                <div class="details-panel">
+                    <div class="meta-tags">
+                        <span class="tag tag-zone">Zone 3 (Perimeter Wall)</span>
+                        <span class="tag tag-time">20 Minutes</span>
+                        <span class="tag tag-ppe">Class 0 Voltage Gloves</span>
+                    </div>
+                    <h2 class="phase-title">Phase 2: LOTO & Live-Dead-Live Check</h2>
+                    <p class="phase-summary">
+                        Isolate Conveyor Sorting Skid #2 power and verify zero electrical energy using the NFPA 70E 3-step meter check prior to touching terminal posts.
+                    </p>
+                    <ul class="highlights-list">
+                        <li>Switch off trainer main breaker CB-1 and apply TRADESAFE steel hasp and red lock.</li>
+                        <li><strong>Phase A (Live Check):</strong> Probe Aux +24V DC source to verify Fluke 117 DMM function (+24.0V DC).</li>
+                        <li><strong>Phase B (Dead Check):</strong> Verify 0.0V DC across load board TB-1 to TB-2.</li>
+                        <li><strong>Phase C (Live Re-Check):</strong> Confirm DMM functionality against live source (+24.0V DC).</li>
+                    </ul>
+                    <div class="pro-tip">
+                        <strong>NFPA 70E Rule:</strong> Never assume a dark indicator light proves a circuit is de-energized. Always verify with LDL testing!
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHASE 3 -->
+            <div class="phase-view" id="phase-2">
+                <div class="visual-panel">
+                    <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Schematic Diagram Representation -->
+                        <path d="M20 80 H50 M150 80 H180" stroke="#002855" stroke-width="3"/>
+                        <!-- Resistor R1 -->
+                        <path d="M50 80 L55 70 L65 90 L75 70 L85 90 L95 70 L100 80" stroke="#0072CE" stroke-width="3" fill="none"/>
+                        <!-- Parallel Branch R2/R3 -->
+                        <path d="M100 80 V40 H120 M100 80 V120 H120" stroke="#002855" stroke-width="3"/>
+                        <path d="M120 40 L125 30 L135 50 L145 30 L150 40" stroke="#F59E0B" stroke-width="3" fill="none"/>
+                        <path d="M120 120 L125 110 L135 130 L145 110 L150 120" stroke="#F59E0B" stroke-width="3" fill="none"/>
+                        <path d="M150 40 V80 H160 M150 120 V80 H160" stroke="#002855" stroke-width="3"/>
+                        <!-- Labels -->
+                        <text x="70" y="60" font-size="10" font-weight="bold" fill="#0072CE">R1 (100Ω)</text>
+                        <text x="125" y="25" font-size="9" font-weight="bold" fill="#F59E0B">R2 (200Ω)</text>
+                        <text x="125" y="145" font-size="9" font-weight="bold" fill="#F59E0B">R3 (200Ω)</text>
+                    </svg>
+                    <span class="visual-caption">Zone 1 Circuit Reduction Math</span>
+                </div>
+                <div class="details-panel">
+                    <div class="meta-tags">
+                        <span class="tag tag-zone">Zone 1 (Learner Desks)</span>
+                        <span class="tag tag-time">30 Minutes</span>
+                        <span class="tag tag-ppe">Calculators & GDP Pens</span>
+                    </div>
+                    <h2 class="phase-title">Phase 3: Theoretical Circuit Analysis</h2>
+                    <p class="phase-summary">
+                        Calculate theoretical parameters for R1 (100Ω) in series with parallel pair R2||R3 (200Ω each) operating on 24.0V DC.
+                    </p>
+                    <ul class="highlights-list">
+                        <li><strong>Parallel Reduction:</strong> R<sub>p</sub> = (200 × 200) / (200 + 200) = <strong>100.0 Ω</strong></li>
+                        <li><strong>Total Resistance:</strong> R<sub>T</sub> = R1 + R<sub>p</sub> = 100 + 100 = <strong>200.0 Ω</strong></li>
+                        <li><strong>Line Current:</strong> I<sub>T</sub> = 24.0V / 200.0Ω = <strong>0.120 A (120 mA)</strong></li>
+                        <li><strong>KVL & KCL Loops:</strong> Verify V<sub>R1</sub> = 12V, V<sub>Rp</sub> = 12V, and branch currents I<sub>2</sub> = I<sub>3</sub> = 60 mA.</li>
+                    </ul>
+                    <div class="pro-tip">
+                        <strong>Math Rule:</strong> Two equal parallel resistors always produce an equivalent resistance equal to half of one resistor ($R/n$).
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHASE 4 -->
+            <div class="phase-view" id="phase-3">
+                <div class="visual-panel">
+                    <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- SMC BEMATE-200 Trainer Frame -->
+                        <rect x="20" y="20" width="160" height="120" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="2"/>
+                        <!-- Terminal Blocks -->
+                        <circle cx="50" cy="50" r="6" fill="#002855"/>
+                        <circle cx="100" cy="50" r="6" fill="#0072CE"/>
+                        <circle cx="150" cy="50" r="6" fill="#0072CE"/>
+                        <circle cx="100" cy="110" r="6" fill="#1E293B"/>
+                        <!-- Jumpers -->
+                        <path d="M50 50 Q75 20 100 50" stroke="#DC2626" stroke-width="3" fill="none"/>
+                        <path d="M100 50 V110 M150 50 V110" stroke="#10B981" stroke-width="3" fill="none"/>
+                        <!-- DMM Mode Indicator -->
+                        <rect x="130" y="100" width="40" height="25" rx="4" fill="#002855"/>
+                        <text x="135" y="116" font-size="10" fill="#10B981" font-weight="bold">10A A=</text>
+                    </svg>
+                    <span class="visual-caption">Zone 3 Hardware Bench Testing</span>
+                </div>
+                <div class="details-panel">
+                    <div class="meta-tags">
+                        <span class="tag tag-zone">Zone 3 (Perimeter Wall)</span>
+                        <span class="tag tag-time">60 Minutes</span>
+                        <span class="tag tag-ppe">Fluke 117 DMM & Jumpers</span>
+                    </div>
+                    <h2 class="phase-title">Phase 4: Benchtop Wiring & DMM Verification</h2>
+                    <p class="phase-summary">
+                        Wire the combination circuit on the SMC BEMATE-200 trainer with banana jumpers and take physical DMM readings within ≤ 5% variance.
+                    </p>
+                    <ul class="highlights-list">
+                        <li><strong>Unpowered Check:</strong> Measure unpowered total resistance R<sub>T</sub> (195Ω – 205Ω tolerance).</li>
+                        <li><strong>Voltage Drops:</strong> Measure V<sub>R1</sub> and V<sub>Rp</sub> using standard V/Ω lead placement.</li>
+                        <li><strong>In-Series Ammeter Mode:</strong> Move red lead to the <strong>10A Jack</strong>, break circuit branches, and measure in-series line current (I<sub>T</sub>) and branch currents (I<sub>2</sub>, I<sub>3</sub>).</li>
+                    </ul>
+                    <div class="pro-tip">
+                        <strong>Fuse Blown Hazard:</strong> NEVER place DMM probes in parallel across energized loads while set to 10A Current mode!
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHASE 5 -->
+            <div class="phase-view" id="phase-4">
+                <div class="visual-panel">
+                    <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- AI Log Document -->
+                        <rect x="35" y="15" width="130" height="130" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+                        <!-- Lines representing log text -->
+                        <line x1="50" y1="35" x2="130" y2="35" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="50" y1="55" x2="150" y2="55" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="50" y1="75" x2="110" y2="75" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Human Overwrite Correction -->
+                        <path d="M45 55 L155 55" stroke="#DC2626" stroke-width="2"/>
+                        <text x="50" y="100" font-size="10" font-weight="bold" fill="#10B981">Verified Human GDP Fix</text>
+                        <!-- Stamp -->
+                        <rect x="90" y="108" width="65" height="22" rx="4" fill="#10B981" transform="rotate(-5)"/>
+                        <text x="96" y="123" font-size="9" font-weight="bold" fill="#FFFFFF" transform="rotate(-5)">APPROVED</text>
+                    </svg>
+                    <span class="visual-caption">Zone 1 Responsible AI Audit</span>
+                </div>
+                <div class="details-panel">
+                    <div class="meta-tags">
+                        <span class="tag tag-zone">Zone 1 (Learner Desks)</span>
+                        <span class="tag tag-time">30 Minutes</span>
+                        <span class="tag tag-ppe">GDP Shift Log Sign-off</span>
+                    </div>
+                    <h2 class="phase-title">Phase 5: AI Log Audit & GDP Handover</h2>
+                    <p class="phase-summary">
+                        Audit an AI copilot draft maintenance report, catch 3 injected technical/safety errors, and write a human-verified GDP technician log.
+                    </p>
+                    <ul class="highlights-list">
+                        <li><strong>AI Error 1:</strong> Corrected direct series resistance sum (500Ω) to valid parallel reduction R<sub>T</sub> = 200Ω.</li>
+                        <li><strong>AI Error 2:</strong> Corrected underestimated line current (0.048A) to actual measured 0.120A (120 mA).</li>
+                        <li><strong>AI Error 3:</strong> Corrected dangerous parallel ammeter recommendation to mandatory <strong>In-Series</strong> measurement protocol.</li>
+                    </ul>
+                    <div class="pro-tip">
+                        <strong>GDP Rule:</strong> Unverified AI maintenance logs create operational liabilities. Human physical verification is always required.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="nav-footer">
+            <button class="btn btn-secondary" id="prevBtn" onclick="changePhase(-1)" disabled>
+                &#8592; Previous Phase
+            </button>
+            <span class="step-indicator" id="stepIndicator">Phase 1 of 5</span>
+            <button class="btn btn-primary" id="nextBtn" onclick="changePhase(1)">
+                Next Phase &#8594;
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentPhase = 0;
+        const totalPhases = 5;
+
+        const progressBar = document.getElementById('progressBar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const stepIndicator = document.getElementById('stepIndicator');
+        const pills = document.querySelectorAll('.pill');
+
+        function updateUI() {
+            // Update Phase Views Visibility
+            for (let i = 0; i < totalPhases; i++) {
+                const phaseView = document.getElementById(`phase-${i}`);
+                if (i === currentPhase) {
+                    phaseView.classList.add('active');
+                } else {
+                    phaseView.classList.remove('active');
+                }
+            }
+
+            // Update Progress Bar
+            const progressPercent = ((currentPhase + 1) / totalPhases) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            // Update Step Indicator Text
+            stepIndicator.textContent = `Phase ${currentPhase + 1} of ${totalPhases}`;
+
+            // Update Pills State
+            pills.forEach((pill, idx) => {
+                pill.classList.remove('active', 'completed');
+                if (idx === currentPhase) {
+                    pill.classList.add('active');
+                } else if (idx < currentPhase) {
+                    pill.classList.add('completed');
+                }
+            });
+
+            // Update Buttons State
+            prevBtn.disabled = (currentPhase === 0);
+            
+            if (currentPhase === totalPhases - 1) {
+                nextBtn.innerHTML = 'Complete Walkthrough ✓';
+                nextBtn.style.background = '#10B981';
+            } else {
+                nextBtn.innerHTML = 'Next Phase &#8594;';
+                nextBtn.style.background = 'var(--primary-accent)';
+            }
+        }
+
+        function changePhase(direction) {
+            currentPhase += direction;
+            if (currentPhase < 0) currentPhase = 0;
+            if (currentPhase >= totalPhases) currentPhase = totalPhases - 1;
+            updateUI();
+        }
+
+        function goToPhase(phaseIndex) {
+            currentPhase = phaseIndex;
+            updateUI();
+        }
+
+        // Initialize UI
+        updateUI();
+    </script>
+</body>
+</html>
