@@ -3,30 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLAB 638.4.1 Walkthrough Presentation</title>
+    <title>GLAB 638.4.1 Walkthrough</title>
     <style>
-        :root {
-            --primary-color: #0056b3;
-            --primary-hover: #003d80;
-            --secondary-bg: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-dark: #2c3e50;
-            --text-muted: #6c757d;
-            --border-color: #e2e8f0;
-            --progress-bg: #e9ecef;
-            --progress-fill: #0056b3;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--secondary-bg);
-            color: var(--text-dark);
+            background-color: #f0f4f8;
+            color: #2d3748;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -34,10 +22,258 @@
             padding: 20px;
         }
 
-        .walkthrough-container {
-            background-color: var(--card-bg);
+        .walkthrough-card {
+            background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             width: 100%;
-            max-width: 800px;
+            max-width: 720px;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            color: #1a365d;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .progress-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+        }
+
+        .progress-bg {
+            background-color: #e2e8f0;
+            height: 10px;
+            border-radius: 5px;
             overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: #2b6cb0;
+            height: 100%;
+            width: 20%;
+            transition: width 0.3s ease;
+        }
+
+        .phase-container {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #2b6cb0;
+            border-radius: 8px;
+            padding: 24px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .phase-title {
+            font-size: 1.15rem;
+            color: #2c5282;
+            font-weight: 700;
+        }
+
+        .phase-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        .phase-highlights {
+            margin-top: 8px;
+            padding-left: 20px;
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background-color: #2b6cb0;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #2c5282;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e0;
+            color: #a0aec0;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="walkthrough-card">
+        <div class="header">
+            <h1>GLAB 638.4.1 Walkthrough</h1>
+            <p>Variable Frequency Drives (VFDs), Speed Tuning & Integrated System Diagnostics</p>
+        </div>
+
+        <div class="progress-wrapper">
+            <div class="progress-info">
+                <span id="phaseStepText">Phase 1 of 5</span>
+                <span id="progressPercent">20%</span>
+            </div>
+            <div class="progress-bg">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="phase-container">
+            <div class="phase-title" id="phaseTitle">Loading...</div>
+            <div class="phase-description" id="phaseDescription">Loading description...</div>
+            <ul class="phase-highlights" id="phaseHighlights"></ul>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="btn" id="prevBtn" onclick="prevPhase()">Previous</button>
+            <button class="btn" id="nextBtn" onclick="nextPhase()">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const phases = [
+            {
+                title: "Phase 1: Pre-Lab VR Onboarding & Digital Simulation",
+                description: "Begin with an immersive digital orientation using the Meta Quest 3 VR headset to familiarize yourself with VFD components and control terminals before working on live physical hardware.",
+                highlights: [
+                    "Locate virtual VFD line terminals (R/L1, S/L2, T/L3) and motor output terminals (U/T1, V/T2, W/T3).",
+                    "Identify control terminals (01-13) and digital keypad display navigation buttons.",
+                    "Practice virtual parameter selection, two-wire control setup, and speed potentiometer tuning."
+                ]
+            },
+            {
+                title: "Phase 2: Electrical Safety Isolation & Live-Dead-Live Verification",
+                description: "Execute strict NFPA 70E safety protocols to guarantee zero-energy electrical state isolation before opening panel covers or touching terminal connections.",
+                highlights: [
+                    "Apply Lockout/Tagout (LOTO) clasps, tags, and padlocks to main disconnect DS-1.",
+                    "Don ANSI safety glasses, cut-resistant gloves, and Class 0 insulated electrical gloves.",
+                    "Perform a 3-point Live-Dead-Live physical meter check across line and load terminals using a Fluke multimeter."
+                ]
+            },
+            {
+                title: "Phase 3: Control Terminal Wiring & Potentiometer Integration",
+                description: "Connect remote control hardware to the VFD terminal strip to enable external start/stop signals and analog speed adjustments.",
+                highlights: [
+                    "Wire a 2-position selector switch across digital terminals 01 and 02 for 2-wire run control.",
+                    "Connect a 10kΩ 3-terminal speed potentiometer to analog reference terminals 11, 12, and 13.",
+                    "Perform mechanical tug tests to ensure solid engagement without loose wire strands."
+                ]
+            },
+            {
+                title: "Phase 4: Parameter Programming & Speed Ramp Tuning",
+                description: "Program core drive parameters via the digital keypad to match motor nameplate specifications and configure smooth acceleration curves.",
+                highlights: [
+                    "Set baseline motor voltage (P031), motor hertz (P032), and full-load overload current (P033).",
+                    "Calibrate soft-start acceleration ramp (P039 = 5.0s) and controlled deceleration ramp (P040 = 3.0s).",
+                    "Configure start source (P046 = 1) for 2-wire control and speed reference (P047 = 2) for 0-10V analog input."
+                ]
+            },
+            {
+                title: "Phase 5: Speed Verification, Volts-per-Hertz Math & GDP Logging",
+                description: "Operate the system across command frequencies, record physical diagnostic measurements, verify operating ratios, and complete shift handover logs.",
+                highlights: [
+                    "Measure physical shaft RPM across 15, 30, 45, and 60 Hz setpoints using an optical tachometer.",
+                    "Calculate theoretical synchronous speed (Ns = 120f / P) and operating Volts-per-Hertz (V/f) ratios.",
+                    "Record meter voltage readings and tachometer speed data on standard GDP log sheets with technician sign-offs."
+                ]
+            }
+        ];
+
+        let currentPhase = 0;
+
+        function updateUI() {
+            const phase = phases[currentPhase];
+            
+            document.getElementById('phaseStepText').innerText = `Phase ${currentPhase + 1} of ${phases.length}`;
+            document.getElementById('phaseTitle').innerText = phase.title;
+            document.getElementById('phaseDescription').innerText = phase.description;
+
+            const highlightsEl = document.getElementById('phaseHighlights');
+            highlightsEl.innerHTML = '';
+            phase.highlights.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = item;
+                highlightsEl.appendChild(li);
+            });
+
+            const percent = Math.round(((currentPhase + 1) / phases.length) * 100);
+            document.getElementById('progressPercent').innerText = `${percent}%`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+
+            document.getElementById('prevBtn').disabled = currentPhase === 0;
+            
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentPhase === phases.length - 1) {
+                nextBtn.innerText = 'Complete';
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.innerText = 'Next';
+                nextBtn.disabled = false;
+            }
+        }
+
+        function nextPhase() {
+            if (currentPhase < phases.length - 1) {
+                currentPhase++;
+                updateUI();
+            }
+        }
+
+        function prevPhase() {
+            if (currentPhase > 0) {
+                currentPhase--;
+                updateUI();
+            }
+        }
+
+        window.onload = updateUI;
+    </script>
+</body>
+</html>
