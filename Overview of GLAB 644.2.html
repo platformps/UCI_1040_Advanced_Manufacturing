@@ -3,116 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLAB 644.2.1 Walkthrough</title>
+    <title>Systematic Troubleshooting Walkthrough</title>
     <style>
         :root {
-            --ps-blue: #004F9F;
-            --ps-light-blue: #E5F0FA;
-            --ps-orange: #F58025;
-            --bg-color: #f4f7f6;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --border-color: #e0e0e0;
-            --white: #ffffff;
+            --primary: #0056b3;
+            --secondary: #00bfff;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-dark: #2c3e50;
+            --text-light: #5f6c7b;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
             padding: 20px;
-            box-sizing: border-box;
         }
 
-        .walkthrough-card {
-            background-color: var(--white);
-            border-radius: 12px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+        .demo-container {
             width: 100%;
-            max-width: 850px;
+            max-width: 700px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        .card-header {
-            background-color: var(--ps-blue);
-            color: var(--white);
-            padding: 24px;
+        .header {
+            background-color: var(--primary);
+            color: #ffffff;
+            padding: 30px 40px;
             text-align: center;
         }
 
-        .card-header h1 {
-            margin: 0;
-            font-size: 1.4rem;
+        .header h1 {
+            font-size: 1.5rem;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
 
-        .card-header p {
-            margin: 8px 0 0;
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
         .progress-track {
-            width: 100%;
-            background-color: var(--ps-light-blue);
+            background-color: #e9ecef;
             height: 6px;
+            width: 100%;
         }
 
         .progress-fill {
             height: 100%;
-            background-color: var(--ps-orange);
-            width: 0%;
-            transition: width 0.4s ease-out;
+            background-color: var(--secondary);
+            width: 25%; /* Default for phase 1 */
+            transition: width var(--transition);
         }
 
-        .card-body {
-            padding: 35px;
-            text-align: center;
-            flex-grow: 1;
-        }
-
-        .visual-container {
-            width: 100%;
-            height: 320px;
-            background-color: #eaeaea;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            overflow: hidden;
+        .content-area {
+            padding: 40px;
+            min-height: 220px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
-            align-items: center;
-            border: 1px solid var(--border-color);
         }
 
-        .visual-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: opacity 0.4s ease;
-        }
-
-        .phase-title {
-            font-size: 1.6rem;
-            color: var(--ps-blue);
+        .phase-indicator {
+            display: inline-block;
+            background-color: #eef5ff;
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 15px;
-            font-weight: bold;
-            transition: opacity 0.4s ease;
+            align-self: flex-start;
         }
 
-        .phase-desc {
-            font-size: 1.1rem;
+        .content-area h2 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        .content-area p {
+            font-size: 1.05rem;
+            color: var(--text-light);
             line-height: 1.6;
-            color: var(--text-muted);
-            min-height: 90px;
-            transition: opacity 0.4s ease;
         }
 
-        .card-footer
+        .controls {
+            padding: 20px 40px;
+            background-color: #fdfdfd;
+            border-top: 1px solid #eeeeee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-prev {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background-color: #cbd5e0;
+        }
+
+        .btn-next {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Fade Animation */
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="demo-container">
+        <header class="header">
+            <h1>Systematic Troubleshooting Walkthrough</h1>
+        </header>
+        
+        <div class="progress-track">
+            <div class="progress-fill" id="progress-bar"></div>
+        </div>
+
+        <div class="content-area" id="content-container">
+            <div class="phase-indicator" id="phase-badge">Phase 1 of 4</div>
+            <h2 id="phase-title">Safety & Energy Isolation (LOTO)</h2>
+            <p id="phase-desc">Prioritize safety by executing NFPA 70E lockout/tagout procedures. You will don appropriate PPE, properly isolate the main power disconnect, and use a digital multimeter to perform a strict 3-point Live-Dead-Live verification to guarantee a zero-energy state before opening any control enclosures.</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-prev" id="prev-btn" onclick="navigate(-1)" disabled>Previous</button>
+            <button class="btn btn-next" id="next-btn" onclick="navigate(1)">Next Phase</button>
+        </div>
+    </div>
+
+    <script>
+        const phases = [
+            {
+                title: "Safety & Energy Isolation (LOTO)",
+                desc: "Prioritize safety by executing NFPA 70E lockout/tagout procedures. You will don appropriate PPE, properly isolate the main power disconnect, and use a digital multimeter to perform a strict 3-point Live-Dead-Live verification to guarantee a zero-energy state before opening any control enclosures."
+            },
+            {
+                title: "Schematic Analysis & 'Bug Hunt'",
+                desc: "Before touching the hardware, you will visually inspect the system's control schematics. During a timed challenge, you will identify and redline pre-engineered drafting errors—such as incorrect terminal numbering or misplaced parallel connections—ensuring the documentation matches the physical reality."
+            },
+            {
+                title: "Half-Split Diagnostic Testing",
+                desc: "With safety protocols verified and power restored, you will systematically trace the 120 VAC control loop. Using the 'Half-Split' troubleshooting method with your multimeter, you will efficiently narrow down the circuit nodes to locate the exact point of voltage drop or open connection."
+            },
+            {
+                title: "Fault Clearance & System Restoration",
+                desc: "Apply the complete 6-step troubleshooting methodology (Symptom, Isolation, Root Cause, Repair, Verify, Document) to tackle a live, instructor-injected fault. You will race against the clock to diagnose, repair, safely restart the system, and log your findings according to Good Documentation Practices (GDP)."
+            }
+        ];
+
+        let currentIndex = 0;
+
+        const phaseBadge = document.getElementById('phase-badge');
+        const phaseTitle = document.getElementById('phase-title');
+        const phaseDesc = document.getElementById('phase-desc');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const contentContainer = document.getElementById('content-container');
+
+        function updateUI() {
+            // Remove animation class to restart it
+            contentContainer.classList.remove('fade-in');
+            
+            // Trigger reflow to restart animation
+            void contentContainer.offsetWidth; 
+            
+            // Apply new content
+            phaseBadge.textContent = `Phase ${currentIndex + 1} of ${phases.length}`;
+            phaseTitle.textContent = phases[currentIndex].title;
+            phaseDesc.textContent = phases[currentIndex].desc;
+            
+            // Update Progress Bar
+            const progressPercentage = ((currentIndex + 1) / phases.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+
+            // Update Buttons
+            prevBtn.disabled = currentIndex === 0;
+            
+            if (currentIndex === phases.length - 1) {
+                nextBtn.textContent = "Finish";
+                nextBtn.disabled = true; // Disable if no more phases
+            } else {
+                nextBtn.textContent = "Next Phase";
+                nextBtn.disabled = false;
+            }
+
+            // Re-add animation class
+            contentContainer.classList.add('fade-in');
+        }
+
+        function navigate(direction) {
+            const newIndex = currentIndex + direction;
+            if (newIndex >= 0 && newIndex < phases.length) {
+                currentIndex = newIndex;
+                updateUI();
+            }
+        }
+    </script>
+</body>
+</html>
