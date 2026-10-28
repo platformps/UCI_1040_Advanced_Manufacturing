@@ -3,63 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLAB 644.3.1 Walkthrough Presentation</title>
+    <title>GLAB 644.3.1: High-Level Walkthrough</title>
     <style>
         :root {
-            --primary-color: #0056b3;
-            --primary-hover: #003d80;
-            --secondary-bg: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-dark: #2c3e50;
-            --text-muted: #6c757d;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f1f5f9;
+            --container-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --progress-bg: #e9ecef;
-            --progress-fill: #0056b3;
-            --accent-color: #28a745;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --progress-bg: #cbd5e1;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--secondary-bg);
-            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .walkthrough-container {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            width: 100%;
+            background-color: var(--container-bg);
+            width: 90%;
             max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            border: 1px solid var(--border-color);
         }
 
         .header {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            padding: 24px;
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
             text-align: center;
         }
 
         .header h1 {
-            font-size: 1.35rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            letter-spacing: 0.3px;
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-main);
         }
 
         .header p {
-            font
+            margin: 8px 0 0 0;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: var(--progress-bg);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.4s ease-in-out;
+        }
+
+        .content-area {
+            padding: 40px 32px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .phase-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phase-description {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .navigation {
+            padding: 24px 32px;
+            background-color: #f8fafc;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-prev {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background-color: #cbd5e1;
+        }
+
+        .btn-next {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Simple fade animation for content */
+        .fade-in {
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="walkthrough-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <h1>GLAB 644.3.1 Walkthrough</h1>
+            <p>SOP/EOP Execution, RCA, & GDP Incident Logging</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- Dynamic Content Area -->
+        <div class="content-area" id="contentArea">
+            <h2 class="phase-title" id="phaseTitle">Loading...</h2>
+            <p class="phase-description" id="phaseDesc">Loading...</p>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="navigation">
+            <button class="btn-prev" id="btnPrev" onclick="navigate(-1)">Previous</button>
+            <button class="btn-next" id="btnNext" onclick="navigate(1)">Next</button>
+        </div>
+
+    </div>
+
+    <script>
+        const phases = [
+            {
+                title: "🚨 The Scenario",
+                desc: "Welcome to Packaging Line 3. During a high-speed production run, the red alarm stack light suddenly illuminated, the conveyor halted abruptly, and the Emergency Stop was triggered. The shift log left by the previous operator is vague: 'The line jammed, made a loud buzz, and died.' Your mission is to isolate the energy, diagnose the fault, repair the line, and document the incident."
+            },
+            {
+                title: "🥽 Phase 1: Pre-Lab VR Onboarding",
+                desc: "Before stepping onto the physical plant floor, you will strap into a Meta Quest 3 headset. In this safe, virtual environment, you will familiarize yourself with emergency protocols, locate virtual disconnects, and practice applying digital lockout padlocks to build muscle memory."
+            },
+            {
+                title: "🔒 Phase 2: Zero-Energy LOTO Challenge",
+                desc: "Safety is the highest priority. You will execute a multi-domain Lockout/Tagout (LOTO) by isolating both electrical and pneumatic energy sources. You must bleed residual air pressure and perform a strict 3-point 'Live-Dead-Live' multimeter check to guarantee a 100% zero-energy state before opening any panels."
+            },
+            {
+                title: "🛑 Phase 3: EOP Execution & System Purge",
+                desc: "Follow the facility's Emergency Operating Procedure (EOP). You will verify the safety stop, confirm hazard isolations, safely purge the jammed materials from the sorting lane, and properly reset the system's thermal overloads and alarm stack."
+            },
+            {
+                title: "🤖 Phase 4: AI Symptom Reframing",
+                desc: "You will participate in a Shift Handover roleplay. Taking the vague operator complaint, you will prompt an AI diagnostic assistant to generate technical failure hypotheses. Crucially, you will not blindly trust the AI; you will cross-reference its suggestions against the physical E-644-03 schematic and your own multimeter readings."
+            },
+            {
+                title: "🐟 Phase 5: Root Cause Analysis (RCA)",
+                desc: "Don't just fix the symptom—find the cause. You will use the '5 Whys' method and an Ishikawa (Fishbone) diagram to trace the failure back to an omitted preventative maintenance check. You will also calculate the financial impact of the unplanned machine downtime."
+            },
+            {
+                title: "📝 Phase 6: SOP Restart & GDP Logging",
+                desc: "With the root cause identified, you will perform the physical repair (re-torquing a loose terminal). You will safely remove your LOTO locks, follow the Standard Operating Procedure (SOP) to restart the line, and formally close out the work order strictly adhering to Good Documentation Practices (GDP)."
+            }
+        ];
+
+        let currentIndex = 0;
+
+        const titleEl = document.getElementById('phaseTitle');
+        const descEl = document.getElementById('phaseDesc');
+        const progressEl = document.getElementById('progressBar');
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
+        const contentArea = document.getElementById('contentArea');
+
+        function updateUI() {
+            // Re-trigger animation
+            contentArea.classList.remove('fade-in');
+            void contentArea.offsetWidth; // trigger reflow
+            contentArea.classList.add('fade-in');
+
+            // Update content
+            titleEl.textContent = phases[currentIndex].title;
+            descEl.textContent = phases[currentIndex].desc;
+
+            // Update progress bar
+            const progressPct = (currentIndex / (phases.length - 1)) * 100;
+            progressEl.style.width = `${progressPct}%`;
+
+            // Update buttons
+            btnPrev.disabled = currentIndex === 0;
+            
+            if (currentIndex === phases.length - 1) {
+                btnNext.textContent = "Finish";
+                btnNext.disabled = true; // Disabled on last slide for this demo
+            } else {
+                btnNext.textContent = "Next";
+                btnNext.disabled = false;
+            }
+        }
+
+        function navigate(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= phases.length) currentIndex = phases.length - 1;
+            updateUI();
+        }
+
+        // Initialize the app
+        updateUI();
+    </script>
+</body>
+</html>
