@@ -3,38 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLAB 644.1_2.1 Walkthrough</title>
+    <title>Module 644: Guided Lab Walkthrough</title>
     <style>
         :root {
-            --primary-color: #0056b3;
+            /* Per Scholas brand colors and clean UI palette */
+            --primary-color: #005587; 
+            --primary-hover: #003d63;
             --secondary-color: #f8f9fa;
-            --text-dark: #202124;
-            --text-light: #5f6368;
-            --white: #ffffff;
-            --border-color: #dadce0;
-            --progress-bg: #e8eaed;
-            --progress-fill: #1a73e8;
+            --text-main: #333333;
+            --text-muted: #555555;
+            --border-radius: 8px;
+            --transition-speed: 0.3s;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--secondary-color);
-            color: var(--text-dark);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #e9ecef;
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
         }
 
-        .walkthrough-container {
-            background-color: var(--white);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 100%;
+        .canvas-container {
+            background-color: #ffffff;
+            width: 90%;
             max-width: 800px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -42,39 +40,203 @@
 
         .header {
             background-color: var(--primary-color);
-            color: var(--white);
-            padding: 24px;
+            color: #ffffff;
+            padding: 24px 32px;
             text-align: center;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            line-height: 1.4;
+            letter-spacing: 0.5px;
         }
 
-        .progress-container {
+        .progress-wrapper {
+            padding: 20px 32px 0;
+            background-color: #ffffff;
+        }
+
+        .progress-bar-bg {
+            background-color: #e0e4e8;
+            height: 10px;
+            border-radius: 5px;
             width: 100%;
-            background-color: var(--progress-bg);
-            height: 6px;
+            overflow: hidden;
         }
 
-        .progress-bar {
+        .progress-fill {
             height: 100%;
-            background-color: var(--progress-fill);
+            background-color: var(--primary-color);
             width: 0%;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width var(--transition-speed) ease-in-out;
+            border-radius: 5px;
         }
 
         .content-area {
-            padding: 32px;
+            padding: 40px 32px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             text-align: center;
-            flex-grow: 1;
         }
 
-        .graphics-container {
-            width: 100%;
-            height: 300px;
-            background-color: #e0e0e0;
-            border-radius:
+        .phase-title {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .phase-description {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            background-color: var(--secondary-color);
+            border-top: 1px solid #e0e4e8;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: #b0c4d1;
+            cursor: not-allowed;
+        }
+
+        .step-indicator {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="canvas-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Module 644: Guided Lab Walkthrough</h1>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-wrapper">
+            <div class="progress-bar-bg">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Dynamic Content -->
+        <div class="content-area">
+            <h2 class="phase-title" id="phaseTitle">Loading...</h2>
+            <p class="phase-description" id="phaseDesc"></p>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="controls">
+            <button id="prevBtn" disabled>&#8592; Previous</button>
+            <span class="step-indicator" id="stepIndicator">Step 1 of 6</span>
+            <button id="nextBtn">Next &#8594;</button>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure for the Phases
+        const phases = [
+            {
+                title: "Phase 1: Pre-Lab Virtual Reality (VR) Orientation",
+                description: "Calibrate Meta Quest 3 VR headsets and complete a virtual walkthrough to locate conveyor motor bearing housings, terminal junction boxes, VFD fault history menus, and thermal camera color controls."
+            },
+            {
+                title: "Phase 2: Electrical Safety Isolation, LOTO, and Voltage Verification",
+                description: "Don Class 0 PPE, execute Lockout/Tagout (LOTO) energy isolation on the main disconnect switch, and perform a three-point Live-Dead-Live physical meter test across AC supply terminals, load contacts, and VFD DC bus terminals using a digital multimeter."
+            },
+            {
+                title: "Phase 3: Visual Mechanical and Electrical Preventive Maintenance (PM)",
+                description: "Perform static preventive maintenance checks using schematic E-644-01, inspecting conveyor belt alignment, motor mounting tightness, terminal block connections, overload relay screws, and VFD cooling fan filters."
+            },
+            {
+                title: "Phase 4: Thermographic and Infrared Predictive Maintenance (PdM) Audit",
+                description: "Re-energize the conveyor under normal load for 10 minutes, scan electrical terminals and motor bearings with infrared thermal imagers and IR thermometer guns, calculate temperature differentials (&Delta;T = T<sub>measured</sub> - T<sub>ambient</sub>), and assign NETA thermal severity classes."
+            },
+            {
+                title: "Phase 5: Practical AI Fault Log Analysis and Physical Schematic Verification",
+                description: "Extract VFD error code logs (F007 Motor Overload), prompt an AI diagnostic assistant for potential root causes, and physically verify AI recommendations against schematic E-644-01 and live hardware measurements before making repairs."
+            },
+            {
+                title: "Phase 6: Good Documentation Practices (GDP) Logging and Technical Reflection",
+                description: "Record contemporaneous measurements, inspection check-boxes, and supervisor sign-offs on formal GDP work order sheets, concluding with written reflections on PM versus PdM logic, Live-Dead-Live safety protocols, and AI verification necessity."
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // DOM Elements
+        const titleEl = document.getElementById('phaseTitle');
+        const descEl = document.getElementById('phaseDesc');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progressBar');
+        const stepIndicator = document.getElementById('stepIndicator');
+
+        // Update UI Function
+        function updateUI() {
+            // Text Content
+            titleEl.innerHTML = phases[currentIndex].title;
+            descEl.innerHTML = phases[currentIndex].description;
+
+            // Progress Bar (scales from 16.6% to 100%)
+            const progressPercentage = ((currentIndex + 1) / phases.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+
+            // Step Indicator Text
+            stepIndicator.textContent = `Phase ${currentIndex + 1} of ${phases.length}`;
+
+            // Button States
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === phases.length - 1;
+        }
+
+        // Event Listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateUI();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < phases.length - 1) {
+                currentIndex++;
+                updateUI();
+            }
+        });
+
+        // Initial Load
+        updateUI();
+    </script>
+</body>
+</html>
