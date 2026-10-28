@@ -3,30 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLAB 638.2.1 Walkthrough Presentation</title>
+    <title>GLAB 638.2.1 Walkthrough</title>
     <style>
         :root {
             --primary-color: #0056b3;
-            --primary-hover: #003d80;
-            --secondary-bg: #f4f6f9;
+            --primary-hover: #004494;
+            --bg-color: #f4f7f9;
             --card-bg: #ffffff;
-            --text-dark: #2c3e50;
-            --text-muted: #6c757d;
-            --border-color: #e2e8f0;
-            --progress-bg: #e9ecef;
-            --progress-fill: #0056b3;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--secondary-bg);
-            color: var(--text-dark);
+            background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -34,90 +31,249 @@
             padding: 20px;
         }
 
-        .walkthrough-container {
+        .app-container {
             background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             width: 100%;
             max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            border: 1px solid var(--border-color);
         }
 
         .header {
-            background-color: var(--primary-color);
-            color: #ffffff;
             padding: 24px;
             text-align: center;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .header h1 {
-            font-size: 1.35rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            letter-spacing: 0.3px;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
         }
 
         .header p {
-            font-size: 0.95rem;
-            opacity: 0.9;
+            font-size: 1rem;
+            color: var(--text-muted);
         }
 
         .progress-container {
+            height: 6px;
+            background-color: #e9ecef;
             width: 100%;
-            background-color: var(--progress-bg);
-            height: 8px;
         }
 
         .progress-bar {
             height: 100%;
-            background-color: var(--progress-fill);
+            background-color: var(--primary-color);
             width: 0%;
             transition: width 0.4s ease-in-out;
         }
 
-        .content-body {
-            padding: 32px 28px;
-            text-align: center;
-            flex-grow: 1;
+        .content-area {
+            padding: 32px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            text-align: center;
+            flex-grow: 1;
         }
 
-        .image-frame {
+        .content-image {
             width: 100%;
-            height: 300px;
-            background-color: #e9ecef;
+            max-height: 300px;
+            object-fit: cover;
             border-radius: 8px;
             margin-bottom: 24px;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: opacity 0.3s ease;
         }
 
-        .image-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: opacity 0.3s ease-in-out;
+        .phase-tag {
+            background-color: #e6f2ff;
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .phase-title {
-            font-size: 1.45rem;
-            color: var(--primary-color);
-            margin-bottom: 14px;
-            font-weight: 700;
+            font-size: 1.75rem;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            line-height: 1.2;
         }
 
-        .phase-description {
-            font-size: 1.05rem;
-            line-height: 1.6;
+        .phase-desc {
+            font-size: 1.1rem;
             color: var(--text-muted);
-            max-width: 700px;
-            min-height: 90px;
+            line-height: 1.6;
+            max-width: 650px;
         }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 24px 32px;
+            border-top: 1px solid var(--border-color);
+            background-color: #fafbfc;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #prev-btn {
+            background-color: #e0e0e0;
+            color: var(--text-main);
+        }
+
+        #prev-btn:hover:not(:disabled) {
+            background-color: #d0d0d0;
+        }
+
+        #next-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #next-btn:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .fade-out {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>GLAB 638.2.1 Walkthrough</h1>
+            <p>Hydraulic Force Calculations & HPU PRV Calibration</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="content-area" id="content-area">
+            <img id="phase-img" class="content-image" src="" alt="Phase visualization">
+            <span id="phase-tag" class="phase-tag"></span>
+            <h2 id="phase-title" class="phase-title"></h2>
+            <p id="phase-desc" class="phase-desc"></p>
+        </div>
+
+        <div class="nav-buttons">
+            <button id="prev-btn" onclick="changePhase(-1)">Previous</button>
+            <button id="next-btn" onclick="changePhase(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const phases = [
+            {
+                tag: "Overview",
+                title: "Welcome to GLAB 638.2.1",
+                desc: "This walkthrough provides a high-level, bird's-eye view of your upcoming hands-on lab. You will be dealing with fluid power mechanics, physical pressure relief valve calibration, and strict safety protocols before confirming the results mathematically.",
+                img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                tag: "Phase 1",
+                title: "Safety & Energy Isolation (LOTO)",
+                desc: "Before touching any mechanical components, safety is the absolute priority. You will don appropriate PPE (Safety Glasses, Class 0 Electrical Gloves) and secure the motor control rig. You'll apply Lockout/Tagout (LOTO) locks and perform a strict Live-Dead-Live meter verification to confirm a zero-energy state before opening the enclosure.",
+                img: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                tag: "Phase 2",
+                title: "System Tracing & Pre-Checks",
+                desc: "With the electrical system rendered safe, you will physically trace the hydraulic flow path—from the reservoir, through the gear pump, to the directional control valve. You will cross-reference your findings with P&ID schematic P-638-02, verifying fluid levels and ensuring the training rig is perfectly level to prevent cavitation.",
+                img: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                tag: "Phase 3",
+                title: "PRV Cracking Pressure Calibration",
+                desc: "You will safely remove your LOTO locks, re-energize the system, and shift the directional valve to deadhead the fluid flow into the hydraulic cylinder. Using hex keys and torque screwdrivers, you will precisely dial in the Adjustable Pressure Relief Valve (PRV-1) spring tension until you verify a steady 500 PSI cracking pressure on the system gauge.",
+                img: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                tag: "Phase 4",
+                title: "Hydraulic Force Calculations",
+                desc: "Finally, you will transition to your classroom desk to mathematically prove the system's output. Using the single-variable formula (F = P x A), you will calculate the exact theoretical extension force of the hydraulic cylinder (in pounds) based on your newly calibrated 500 PSI setpoint and log it according to Good Documentation Practices (GDP).",
+                img: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&w=800&q=80"
+            }
+        ];
+
+        let currentPhase = 0;
+
+        const phaseImg = document.getElementById('phase-img');
+        const phaseTag = document.getElementById('phase-tag');
+        const phaseTitle = document.getElementById('phase-title');
+        const phaseDesc = document.getElementById('phase-desc');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const contentArea = document.getElementById('content-area');
+
+        function renderPhase() {
+            // Apply fade out for smooth transition
+            contentArea.classList.add('fade-out');
+            
+            setTimeout(() => {
+                const data = phases[currentPhase];
+                phaseImg.src = data.img;
+                phaseTag.innerText = data.tag;
+                phaseTitle.innerText = data.title;
+                phaseDesc.innerText = data.desc;
+
+                // Update Progress Bar
+                const progressPercentage = ((currentPhase + 1) / phases.length) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+
+                // Update Buttons
+                prevBtn.disabled = currentPhase === 0;
+                
+                if (currentPhase === phases.length - 1) {
+                    nextBtn.innerText = "Finish";
+                    nextBtn.disabled = true; 
+                } else {
+                    nextBtn.innerText = "Next";
+                    nextBtn.disabled = false;
+                }
+
+                // Fade back in
+                contentArea.classList.remove('fade-out');
+            }, 150);
+        }
+
+        function changePhase(step) {
+            const newPhase = currentPhase + step;
+            if (newPhase >= 0 && newPhase < phases.length) {
+                currentPhase = newPhase;
+                renderPhase();
+            }
+        }
+
+        // Initialize the first phase on load
+        window.onload = renderPhase;
+    </script>
+</body>
+</html>
