@@ -3,139 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLAB 638.3.1 Walkthrough Presentation</title>
+    <title>GLAB 638.3.1 Walkthrough</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        psblue: {
+                            500: '#0070CD',
+                            600: '#0055A2',
+                            700: '#003A70',
+                            800: '#002244'
+                        },
+                        psgreen: '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --primary-color: #0056b3;
-            --primary-hover: #003d80;
-            --secondary-bg: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-dark: #2c3e50;
-            --text-muted: #6c757d;
-            --border-color: #e2e8f0;
-            --progress-bg: #e9ecef;
-            --progress-fill: #0056b3;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--secondary-bg);
-            color: var(--text-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: #F1F5F9;
+        }
+        
+        .fade-transition {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
 
-        .walkthrough-container {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 800px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border-color);
+        .fade-out {
+            opacity: 0;
+            transform: translateY(10px);
         }
 
-        .header {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            padding: 24px;
-            text-align: center;
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Custom scrollbar for aesthetic purposes */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Main Card Container -->
+    <div class="bg-white max-w-3xl w-full rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[600px] sm:h-[500px]">
+        
+        <!-- Header -->
+        <header class="bg-psblue-700 text-white p-6 flex items-center shadow-md z-10">
+            <svg class="w-8 h-8 mr-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+            </svg>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight">GLAB 638.3.1: 3-Phase AC Electric Motors & Shaft Alignment</h1>
+                <p class="text-blue-200 text-sm mt-1 font-medium tracking-wide uppercase">High-Level Walkthrough</p>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 h-2">
+            <div id="progress-bar" class="bg-psgreen h-2 transition-all duration-500 ease-out" style="width: 0%;"></div>
+        </div>
+
+        <!-- Content Area -->
+        <main class="flex-grow p-8 sm:p-10 flex flex-col justify-center bg-slate-50 relative overflow-y-auto">
+            
+            <div id="content-wrapper" class="fade-transition fade-in max-w-2xl mx-auto w-full">
+                <div class="inline-block bg-blue-100 text-psblue-700 px-3 py-1 rounded-full text-xs font-bold mb-4 tracking-wider uppercase shadow-sm" id="phase-badge">
+                    Phase 1 of 6
+                </div>
+                <h2 id="phase-title" class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 leading-tight">
+                    Pre-Lab VR Onboarding
+                </h2>
+                <p id="phase-desc" class="text-gray-600 text-lg sm:text-xl leading-relaxed">
+                    Gear up with the Meta Quest 3 headset for a quick digital run-through. You'll locate virtual motor junction leads and calibrate laser alignment sensors in the Interplay VR simulation before touching the physical hardware.
+                </p>
+            </div>
+
+            <!-- Completion View (Hidden by default) -->
+            <div id="completion-wrapper" class="hidden flex flex-col items-center justify-center text-center h-full fade-transition fade-out">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <svg class="w-10 h-10 text-psgreen" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Walkthrough Complete</h2>
+                <p class="text-gray-600 text-lg max-w-md">You are now ready to begin GLAB 638.3.1. Proceed to your workstation and await facilitator instructions.</p>
+            </div>
+
+        </main>
+
+        <!-- Footer Navigation -->
+        <footer class="bg-white border-t border-gray-200 p-6 flex justify-between items-center rounded-b-2xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <button id="btn-prev" class="px-6 py-3 rounded-lg font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                Previous
+            </button>
+            <div class="flex items-center space-x-2 hidden sm:flex" id="dot-indicators">
+                <!-- Dots injected via JS -->
+            </div>
+            <button id="btn-next" class="px-8 py-3 rounded-lg font-semibold text-white bg-psblue-600 hover:bg-psblue-700 focus:outline-none focus:ring-2 focus:ring-psblue-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
+        </footer>
+
+    </div>
+
+    <script>
+        // Phase Data
+        const phases = [
+            {
+                title: "Pre-Lab VR Onboarding",
+                desc: "Gear up with the Meta Quest 3 headset for a quick digital run-through. You'll locate virtual motor junction leads and calibrate laser alignment sensors in the Interplay VR simulation before touching the physical hardware."
+            },
+            {
+                title: "LOTO & Live-Dead-Live Verification",
+                desc: "Safety first. Don your PPE and execute strict NFPA 70E Lockout/Tagout protocols on the motor control panel. You will use a digital multimeter to perform a 3-point Live-Dead-Live test, ensuring a safe, zero-energy state."
+            },
+            {
+                title: "Nameplate Decoding & Stator Testing",
+                desc: "Record the rated parameters directly from the motor’s nameplate. Next, you'll measure winding resistance across internal coils to verify their integrity and confirm there are no ground faults."
+            },
+            {
+                title: "3-Phase Motor Wiring (Wye/Delta)",
+                desc: "Following the schematic, you will configure the 9-lead motor for either a Low-Voltage Wye or Low-Voltage Delta setup. You'll make the proper connections and ensure all exposed crimps are safely insulated."
+            },
+            {
+                title: "Precision Shaft Alignment",
+                desc: "Time to align the motor and pump shafts! Using both Rim-and-Face Dial Indicators and a Digital Laser Toolkit, you'll measure offset and gap, then adjust shims until misalignment is strictly under the 2.0 mils tolerance."
+            },
+            {
+                title: "Speed & Slip Math Verification",
+                desc: "Clear the area, remove LOTO, and safely power up the circuit. You'll use an optical tachometer to measure the actual running RPM, then calculate the theoretical synchronous speed and percent rotor slip."
+            }
+        ];
+
+        // State
+        let currentPhase = 0;
+        let isCompleted = false;
+
+        // DOM Elements
+        const phaseBadge = document.getElementById('phase-badge');
+        const phaseTitle = document.getElementById('phase-title');
+        const phaseDesc = document.getElementById('phase-desc');
+        const contentWrapper = document.getElementById('content-wrapper');
+        const completionWrapper = document.getElementById('completion-wrapper');
+        const progressBar = document.getElementById('progress-bar');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const dotIndicators = document.getElementById('dot-indicators');
+
+        // Initialize Dots
+        function initDots() {
+            dotIndicators.innerHTML = '';
+            phases.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = `w-2 h-2 rounded-full transition-colors duration-300 ${index === currentPhase ? 'bg-psblue-600 scale-125' : 'bg-gray-300'}`;
+                dotIndicators.appendChild(dot);
+            });
         }
 
-        .header h1 {
-            font-size: 1.35rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            letter-spacing: 0.3px;
+        // Update Dots
+        function updateDots() {
+            if(isCompleted) {
+                dotIndicators.style.opacity = '0';
+                return;
+            }
+            dotIndicators.style.opacity = '1';
+            const dots = dotIndicators.children;
+            for(let i = 0; i < dots.length; i++) {
+                if(i === currentPhase) {
+                    dots[i].className = 'w-2 h-2 rounded-full transition-colors duration-300 bg-psblue-600 transform scale-125';
+                } else {
+                    dots[i].className = 'w-2 h-2 rounded-full transition-colors duration-300 bg-gray-300';
+                }
+            }
         }
 
-        .header p {
-            font-size: 0.95rem;
-            opacity: 0.9;
+        // Update UI based on current state
+        function updateUI() {
+            // Update Progress Bar
+            const progressPercentage = isCompleted ? 100 : ((currentPhase) / phases.length) * 100;
+            
+            // Adjust progress visually to show chunks (e.g. phase 1 shows 1/6th full)
+            const displayPercentage = isCompleted ? 100 : ((currentPhase + 1) / phases.length) * 100;
+            progressBar.style.width = `${displayPercentage}%`;
+
+            if (isCompleted) {
+                // Handle Completion Screen
+                contentWrapper.classList.replace('fade-in', 'fade-out');
+                setTimeout(() => {
+                    contentWrapper.classList.add('hidden');
+                    completionWrapper.classList.remove('hidden');
+                    // Small delay to ensure display:block applies before animating opacity
+                    setTimeout(() => {
+                        completionWrapper.classList.replace('fade-out', 'fade-in');
+                    }, 50);
+                }, 300);
+
+                btnPrev.style.display = 'none';
+                btnNext.innerText = 'Restart Walkthrough';
+                btnNext.classList.replace('bg-psblue-600', 'bg-gray-800');
+                btnNext.classList.replace('hover:bg-psblue-700', 'hover:bg-gray-900');
+                updateDots();
+                return;
+            }
+
+            // Normal phase update with fade animation
+            contentWrapper.classList.replace('fade-in', 'fade-out');
+            
+            setTimeout(() => {
+                const phase = phases[currentPhase];
+                phaseBadge.innerText = `Phase ${currentPhase + 1} of ${phases.length}`;
+                phaseTitle.innerText = phase.title;
+                phaseDesc.innerText = phase.desc;
+                
+                contentWrapper.classList.replace('fade-out', 'fade-in');
+            }, 300);
+
+            // Update Buttons
+            btnPrev.disabled = currentPhase === 0;
+            
+            if (currentPhase === phases.length - 1) {
+                btnNext.innerText = 'Finish';
+                btnNext.classList.replace('bg-psblue-600', 'bg-psgreen');
+                btnNext.classList.replace('hover:bg-psblue-700', 'hover:bg-emerald-600');
+                btnNext.classList.replace('focus:ring-psblue-500', 'focus:ring-psgreen');
+            } else {
+                btnNext.innerText = 'Next';
+                btnNext.classList.replace('bg-psgreen', 'bg-psblue-600');
+                btnNext.classList.replace('hover:bg-emerald-600', 'hover:bg-psblue-700');
+                btnNext.classList.replace('focus:ring-psgreen', 'focus:ring-psblue-500');
+            }
+
+            updateDots();
         }
 
-        .progress-container {
-            width: 100%;
-            background-color: var(--progress-bg);
-            height: 8px;
-        }
+        // Event Listeners
+        btnNext.addEventListener('click', () => {
+            if (isCompleted) {
+                // Restart logic
+                isCompleted = false;
+                currentPhase = 0;
+                btnPrev.style.display = 'block';
+                btnNext.classList.replace('bg-gray-800', 'bg-psblue-600');
+                btnNext.classList.replace('hover:bg-gray-900', 'hover:bg-psblue-700');
+                
+                completionWrapper.classList.replace('fade-in', 'fade-out');
+                setTimeout(() => {
+                    completionWrapper.classList.add('hidden');
+                    contentWrapper.classList.remove('hidden');
+                    updateUI();
+                }, 300);
+                
+            } else if (currentPhase < phases.length - 1) {
+                currentPhase++;
+                updateUI();
+            } else if (currentPhase === phases.length - 1) {
+                isCompleted = true;
+                updateUI();
+            }
+        });
 
-        .progress-bar {
-            height: 100%;
-            background-color: var(--progress-fill);
-            width: 0%;
-            transition: width 0.4s ease-in-out;
-        }
+        btnPrev.addEventListener('click', () => {
+            if (currentPhase > 0 && !isCompleted) {
+                currentPhase--;
+                updateUI();
+            }
+        });
 
-        .content-body {
-            padding: 32px 28px;
-            text-align: center;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        // Initialize App
+        initDots();
+        updateUI();
 
-        .image-frame {
-            width: 100%;
-            height: 300px;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid var(--border-color);
-        }
-
-        .image-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .phase-title {
-            font-size: 1.45rem;
-            color: var(--primary-color);
-            margin-bottom: 14px;
-            font-weight: 700;
-        }
-
-        .phase-description {
-            font-size: 1.05rem;
-            line-height: 1.6;
-            color: var(--text-muted);
-            max-width: 700px;
-            min-height: 90px;
-        }
-
-        .footer-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 28px;
-            border-top: 1px solid var(--border-color);
-            background-color: #f8f9fa;
-        }
-
-        .btn {
-            padding: 10px 24px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color
+    </script>
+</body>
+</html>
